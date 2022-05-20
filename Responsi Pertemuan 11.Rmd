@@ -1,0 +1,186 @@
+---
+title: "Responsi Komstat Peretemuan 11"
+author: "Alwan Rahmana"
+date: "5/13/2022"
+output: word_document
+---
+
+#Requirement
+```{r}
+require(foreign)
+require(agricolae)
+library(dplyr)
+library(tidyr)
+library(stats)
+if(!require('dgof')) {
+  install.packages('dgof')
+  library('dgof')
+}
+```
+
+#Nomor 1
+```{r}
+#Persiapan data
+
+
+x<-iris%>%select(Sepal.Length,Species)%>%group_by(Species)
+z<-as.data.frame(x)
+z
+xs<-x%>%filter(Species=="setosa")
+xvi<-x%>%filter(Species=="virginica")
+xvers<-x%>%filter(Species=="versicolor")
+xs<-xs$Sepal.Length
+xs
+xvi<-xvi$Sepal.Length
+xvi
+xvers<-xvers$Sepal.Length
+xvers
+#Melihat rata-rata masing-masing Species
+zz<-z%>%group_by(Species)%>%summarise(meanz=mean(Sepal.Length))
+zz
+```
+
+
+#Memulai perhitungan
+```{r}
+
+#Normality test
+shapiro.test(xs) #normal untuk setosa
+shapiro.test(xvi) #normal untuk virginica
+shapiro.test(xvers) #normal untuk versicolor
+
+#perbedaan sepal.length by species
+anova2<-aov(Sepal.Length~Species,data = z)
+summary(anova2)
+```
+#Interpretasi:
+
+H0: miu1=miu2=miu3
+Ha: Setidaknya ada satu miu yang berbeda
+
+
+Dengan tingkat signifikansi 5%, p-value yang didapatkan 2e-16 dan kurang dari alpha. Maka tolak H0. Cukup bukti untuk menyatakan bahwa setidaknya ada satu rata-rata yang berbeda.
+
+
+#Uji Tukey
+
+```{r}
+TukeyHSD(anova2,conf.level = 0.95)
+```
+
+#Interpretasi
+
+Berdasarkan output p adj dengan tingkat signifikansi 5%:
+
+versicolor-setosa berbeda signifikan
+virginica-setosa  berbeda signifikan   
+virginica-versicolor berbeda signifikan
+
+
+
+
+
+#Nomor 1
+
+```{r}
+
+#Persiapan data
+data<-read.csv("C:/Users/HP/OneDrive - Universitas Diponegoro/Documents/Kulon STIS IV/Komstat/Teori/cancer-survival.csv")
+
+head(data)
+
+d<-data%>%group_by(Organ)%>%arrange(Organ)
+d$Organ
+#breast
+d1<-d%>%filter(Organ=="Breast")
+
+d11<-d1$Survival
+d11
+
+#bronchus
+d2<-d%>%filter(Organ=="Bronchus")
+
+d22<-d2$Survival
+d22
+
+#Colon
+d3<-d%>%filter(Organ=="Colon")
+
+d33<-d3$Survival
+d33
+
+#Ovary
+d4<-d%>%filter(Organ=="Ovary")
+
+d44<-d4$Survival
+d44
+
+#Stomach
+d5<-d%>%filter(Organ=="Stomach")
+
+d55<-d5$Survival
+d55
+
+
+```
+
+
+```{r}
+#Normality test
+shapiro.test(d11)
+shapiro.test(d22)
+shapiro.test(d33)
+shapiro.test(d44)
+shapiro.test(d55)
+
+#Kelima data tidak normal
+
+
+
+#Kelima data juga memliki length yang berbeda
+
+#Anova test
+
+anova1<-aov(Survival~Organ,data=data)
+summary(anova1)
+(2883940)/(26448144/59)
+
+```
+
+
+H0: miu1=miu2=miu3
+Ha: Setidaknya ada satu miu yang berbeda
+Alpha: 5%
+
+
+
+
+SSR = 11535761
+MSR= 2883940
+
+SSE= 26448144
+MSE = 448273.6
+
+F = MSR/MSE = 6.433437
+
+Ftable = F(1-a;p-1;n-p)=2.52
+
+F>Ftable maka tolak H0
+
+Karena F>Ftable, dengan tingkat signifikansi 5%, tolak H0. Cukup bukti untuk menyatakan bahwa setidaknya ada satu miu yang berbeda.
+
+
+#Uji Tukey
+
+```{r}
+TukeyHSD(anova1,conf.level = 0.95)
+```
+#Interpretasi
+
+Berdasarkan p-adj dengan alpha=5%, terdapat perbedaan rata-rata pada:
+
+Bronchus-Breast
+Colon-Breast
+Stomach-Breast
+
+
